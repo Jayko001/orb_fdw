@@ -26,7 +26,7 @@ Connect to orb using your credentials:
 create server my_orb_server
   foreign data wrapper orb_wrapper
   options (
-    api_key '<orb secret Key>')
+    api_key '<your_orb_api_key>')
 ```
 
 Create Foreign Table:
