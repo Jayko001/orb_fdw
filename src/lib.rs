@@ -103,7 +103,19 @@ fn body_to_rows(
                 // Navigate through nested properties
                 let mut current_value: Option<&JsonValue> = Some(obj);
                 for part in src_name.split('.') {
-                    current_value = current_value.unwrap().as_object().unwrap().get(part);
+                    current_value = match current_value {
+                        Some(value) => match value.as_object() {
+                            Some(obj) => obj.get(part),
+                            None => {
+                                warning!("Expected JSON object for property '{}' in path '{}'", part, src_name);
+                                None
+                            }
+                        },
+                        None => {
+                            warning!("Missing value while navigating to '{}' in path '{}'", part, src_name);
+                            None
+                        }
+                    };
                 }
 
                 let cell = current_value.and_then(|v| match *col_type {
