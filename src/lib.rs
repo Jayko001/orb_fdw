@@ -58,7 +58,7 @@ fn resp_to_rows(obj: &str, resp: &JsonValue, tgt_cols: &[Column]) -> OrbFdwResul
                 ("customer.external_customer_id", "organization_id", "string"),
                 ("status", "status", "string"),
                 ("invoice_date", "due_date", "timestamp_iso"),
-                ("amount_due", "amount", "string"),
+                ("amount_due", "amount", "numeric"),
             ],
             tgt_cols,
         ),
@@ -110,6 +110,7 @@ fn body_to_rows(
                     "bool" => v.as_bool().map(Cell::Bool),
                     "i64" => v.as_i64().map(Cell::I64),
                     "string" => v.as_str().map(|a| Cell::String(a.to_owned())),
+                    "numeric" => v.as_str().and_then(|a| a.parse::<f64>().ok()).map(Cell::F64),
                     "timestamp" => Some(
                         v.as_str()
                             .and_then(|a| a.parse::<i64>().ok())
